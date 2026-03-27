@@ -47,8 +47,6 @@ RUN chgrp -R 0 /app && \
 WORKDIR /app
 RUN mkdir -p /app/OneDrive /app/.config/onedrive
 
-COPY scanner_cuda.py /app/scanner_cuda.py
-
 RUN chgrp -R 0 /app && \
     chmod -R g=u /app && \
     chmod +x /app/scanner_cuda.py
