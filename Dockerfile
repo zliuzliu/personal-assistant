@@ -35,12 +35,22 @@ RUN pip3 install --no-cache-dir \
     python-docx python-pptx pdf2image Pillow
 
 # 7. 设置环境
+# 创建必要的目录
+RUN mkdir -p /app/OneDrive /app/.config/onedrive
+
+# 关键：赋予 /app 递归的组写权限
+# OpenShift 随机 UID 属于 root 组 (GID 0)，所以赋予 GID 0 权限是标准做法
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app
+
+# 设置环境变量
+ENV HOME=/app
+ENV ONEDRIVE_DATA_DIR="/app/OneDrive"
+ENV ONEDRIVE_CONF_DIR="/app/.config/onedrive"
+
 WORKDIR /app
-ENV ONEDRIVE_DATA_DIR="/app/data/onedrive"
-ENV ONEDRIVE_CONF_DIR="/root/.config/onedrive"
 ENV HF_HUB_OFFLINE="1"
 
 COPY scanner_cuda.py /app/scanner_cuda.py
-RUN mkdir -p /app/data/onedrive
 
 CMD ["/bin/bash", "-c", "onedrive --synchronize --single-directory '02.Work/03.RedHat/Workspace/10.GenAI-PA/sync_dir' && python3 /app/scanner_cuda.py && onedrive --monitor"]
