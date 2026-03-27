@@ -44,13 +44,16 @@ RUN chgrp -R 0 /app && \
     chmod -R g=u /app
 
 # 设置环境变量
-ENV HOME=/app
-ENV ONEDRIVE_DATA_DIR="/app/OneDrive"
-ENV ONEDRIVE_CONF_DIR="/app/.config/onedrive"
-
 WORKDIR /app
-ENV HF_HUB_OFFLINE="1"
+RUN mkdir -p /app/OneDrive /app/.config/onedrive
 
 COPY scanner_cuda.py /app/scanner_cuda.py
 
-CMD ["/bin/bash", "-c", "onedrive --synchronize --single-directory '02.Work/03.RedHat/Workspace/10.GenAI-PA/sync_dir' && python3 /app/scanner_cuda.py && onedrive --monitor"]
+RUN chgrp -R 0 /app && \
+    chmod -R g=u /app && \
+    chmod +x /app/scanner_cuda.py
+
+ENV HOME=/app
+ENV ONEDRIVE_DATA_DIR="/app/OneDrive"
+ENV ONEDRIVE_CONF_DIR="/app/.config/onedrive"
+ENV HF_HUB_OFFLINE="1"
